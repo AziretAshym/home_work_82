@@ -1,6 +1,7 @@
 import express from "express";
 import Artist from "../models/Artist";
 import {imagesUpload} from "../multer";
+import mongoose from "mongoose";
 
 const artistsRouter = express.Router();
 
@@ -17,10 +18,6 @@ artistsRouter.post('/', imagesUpload.single('image'), async (req, res, next) => 
     try {
         const { name, info } = req.body;
 
-        if (!name) {
-            res.send({ error: 'Name is required' });
-        }
-
         const newArtist = {
             name,
             image: req.file ? `images/${req.file.filename}` : null,
@@ -31,6 +28,13 @@ artistsRouter.post('/', imagesUpload.single('image'), async (req, res, next) => 
         await newArtistData.save();
         res.send(newArtistData);
     } catch (e) {
+        if (e instanceof mongoose.Error.ValidationError) {
+            const ValidationError = Object.keys(e.errors).map(key => ({
+                field: key,
+                message: e.errors[key].message
+            }));
+            res.status(400).send({error: ValidationError});
+        }
         next(e);
     }
 });

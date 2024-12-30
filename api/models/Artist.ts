@@ -11,7 +11,10 @@ const ArtistSchema = new Schema({
         type: String,
         default: null,
     },
-    info: String,
+    info: {
+        type: String,
+        default: null,
+    },
 });
 
 const Artist = mongoose.model("Artist", ArtistSchema);

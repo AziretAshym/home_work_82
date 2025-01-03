@@ -10,7 +10,7 @@ tracksRouter.get("/", async (req, res, next) => {
 
     try {
         const filter = albumIdQuery ? {album: albumIdQuery} : {};
-        const track = await Track.find(filter).populate("album", "title -_id",);
+        const track = await Track.find(filter);
         res.send(track);
     } catch (e) {
         next(e);

@@ -6,7 +6,7 @@ import {imagesUpload} from "../multer";
 
 const albumsRouter = express.Router();
 
-albumsRouter.get("/", async (req, res, next) => {
+albumsRouter.get("/", imagesUpload.single('image'), async (req, res, next) => {
     const artistIdQuery = req.query.artist_id;
 
     try {
@@ -19,7 +19,7 @@ albumsRouter.get("/", async (req, res, next) => {
 });
 
 albumsRouter.post("/", imagesUpload.single('image'), async (req, res, next) => {
-    const { title, artist, yearOfIssue, image } = req.body;
+    const { title, artist, yearOfIssue } = req.body;
 
     if (!artist) {
         res.status(400).send('Artist id must be in request!');
@@ -43,7 +43,7 @@ albumsRouter.post("/", imagesUpload.single('image'), async (req, res, next) => {
             title,
             artist,
             yearOfIssue,
-            image,
+            image: req.file ? `images/${req.file.filename}` : null,
         });
 
         await newAlbum.save();

@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 const artistsRouter = express.Router();
 
-artistsRouter.get('/', imagesUpload.single('image'), async (req, res, next) => {
+artistsRouter.get('/', async (_req, res, next) => {
     try {
         const artists = await Artist.find();
         res.send(artists);

@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import Artist from "../models/Artist";
 import Album from "../models/Album";
+import {imagesUpload} from "../multer";
 
 const albumsRouter = express.Router();
 
@@ -17,7 +18,7 @@ albumsRouter.get("/", async (req, res, next) => {
     }
 });
 
-albumsRouter.post("/", async (req, res, next) => {
+albumsRouter.post("/", imagesUpload.single('image'), async (req, res, next) => {
     const { title, artist, yearOfIssue, image } = req.body;
 
     if (!artist) {
@@ -25,7 +26,11 @@ albumsRouter.post("/", async (req, res, next) => {
     }
 
     if (!mongoose.isValidObjectId(artist)) {
-        res.status(404).send('Artist id not found!');
+        res.status(400).send('Invalid artist ID!');
+    }
+
+    if (yearOfIssue > new Date().getFullYear()) {
+        res.status(400).send(`The year you enter (${yearOfIssue}) cannot be greater than the current year (${new Date().getFullYear()})!`);
     }
 
     try {
